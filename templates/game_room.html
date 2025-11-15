@@ -1,29 +1,29 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UNO</title>
+    <title>Sala {{ room_code }}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
 </head>
 <body>
     <div class="container">
-        <h1>UNO Online</h1>
+        <h1>Sala: {{ room_code }}</h1>
+        <p>Esta es la sala de juego.</p>
+        <p>Jugadores conectados: <span id="player-count">0</span></p>
         
-        <div class="menu">
-            <a href="{{ url_for('main.create_room') }}" class="btn btn-primary">
-                Crear Sala
-            </a>
-            <a href="{{ url_for('main.join_room') }}" class="btn btn-secondary">
-                Unirse a Sala
-            </a>
+        <div id="game-area">
+            <p>El juego comenzará pronto...</p>
         </div>
+        
+        <a href="{{ url_for('main.index') }}" class="btn btn-secondary">Salir de la Sala</a>
         
         <div id="connection-status" class="status">
             Conectando...
         </div>
     </div>
+
     <script src="{{ url_for('static', filename='js/game.js') }}"></script>
 </body>
 </html>

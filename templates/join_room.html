@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unirse a Sala</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Unirse a Sala</h1>
+        
+        <form id="join-room-form">
+            <div class="form-group">
+                <label for="room-code">Código de la sala:</label>
+                <input type="text" id="room-code" name="room-code" required 
+                       placeholder="Ej: ABC123" maxlength="6" style="text-transform: uppercase;">
+            </div>
+            
+            <div class="form-group">
+                <label for="username">Tu nombre:</label>
+                <input type="text" id="username" name="username" required 
+                       placeholder="Ej: David">
+            </div>
+            
+            <button type="submit" class="btn btn-primary">Unirse a Sala</button>
+        </form>
+        
+        <a href="{{ url_for('main.index') }}" class="btn btn-secondary">Volver al Inicio</a>
+        
+        <div id="connection-status" class="status">
+            Conectando...
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/game.js') }}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('join-room-form');
+            const roomCodeInput = document.getElementById('room-code');
+            
+            roomCodeInput.addEventListener('input', function() {
+                this.value = this.value.toUpperCase();
+            });
+            
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const roomCode = roomCodeInput.value;
+                const username = document.getElementById('username').value;
+                
+                if (roomCode && username) {
+                    window.unoClient.joinRoom(roomCode, username);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
