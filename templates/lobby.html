@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sala {{ room_code }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Sala: {{ room_code }}</h1>
+        <p class="room-info">Esperando jugadores... <span id="player-count">0</span>/4</p>
+        
+        <!-- Área de jugadores conectados -->
+        <div class="players-section">
+            <h2>Jugadores Conectados:</h2>
+            <div id="players-list" class="players-list">
+                <!-- Se llenará dinámicamente con JavaScript -->
+                <div class="player-item you">
+                    <span class="player-name">{{ username }} (Tú)</span>
+                    <span class="player-badge host">Host</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Botón de iniciar juego (solo visible para host) -->
+        <div id="host-controls" class="host-controls" style="display: none;">
+            <button id="start-game-btn" class="btn btn-success">Iniciar Partida</button>
+            <p class="help-text">Todos los jugadores deben estar conectados</p>
+        </div>
+
+        <!-- Información para jugadores no-host -->
+        <div id="waiting-message" class="waiting-message">
+            <p>Esperando a que el host inicie la partida...</p>
+        </div>
+
+        <a href="{{ url_for('main.index') }}" class="btn btn-secondary back-button">
+            Salir de la Sala
+        </a>
+        
+        <div id="connection-status" class="status">
+            Conectando...
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/game.js') }}"></script>
+    <script>
+        // Lógica específica de la sala de espera
+        document.addEventListener('DOMContentLoaded', function() {
+        const startGameBtn = document.getElementById('start-game-btn');
+        
+        if (startGameBtn) {
+            startGameBtn.addEventListener('click', function() {
+                // Usar el room_code del template directamente
+                const roomCode = '{{ room_code }}';
+                console.log('🎯 Host iniciando juego en sala:', roomCode);
+                window.unoClient.startGame(roomCode);
+            });
+        }
+
+        console.log('Código de sala para compartir:', '{{ room_code }}');
+    });
+    </script>
+</body>
+</html>

@@ -1,7 +1,14 @@
+import eventlet
 from flask import Flask
 from flask_socketio import SocketIO
+import os
 
-socketio = SocketIO()
+socketio = SocketIO(
+    cors_allowed_origins="*", 
+    async_mode='eventlet',
+    logger=True,
+    engineio_logger=True
+)
 
 def create_app():
     app = Flask(
@@ -10,7 +17,7 @@ def create_app():
         static_folder='../static'
     )
 
-    app.config['SECRET_KEY'] = 'key'
+    app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'uno-secret-key')
 
     from app.routes import main_bp
     app.register_blueprint(main_bp)

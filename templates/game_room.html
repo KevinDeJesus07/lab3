@@ -3,27 +3,87 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sala {{ room_code }}</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <title>UNO - Juego en curso</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/game.css') }}">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
 </head>
 <body>
-    <div class="container">
-        <h1>Sala: {{ room_code }}</h1>
-        <p>Esta es la sala de juego.</p>
-        <p>Jugadores conectados: <span id="player-count">0</span></p>
-        
-        <div id="game-area">
-            <p>El juego comenzará pronto...</p>
+    <div class="game-container">
+        <!-- CABECERA DEL JUEGO -->
+        <header class="game-header">
+            <h1>UNO - Partida en curso</h1>
+            <div class="game-info">
+                <span class="current-player" id="current-player">Turno de: [TODO]</span>
+                <span class="game-code">Sala: {{ room_code }}</span>
+            </div>
+        </header>
+
+        <!-- ÁREA PRINCIPAL DEL JUEGO -->
+        <main class="game-main">
+            <!-- CARTA EN EL CENTRO -->
+            <div class="center-card">
+                <div class="current-card" id="current-card">
+                    <div class="card-content">
+                        <span class="card-number">5</span>
+                        <span class="card-color red">●</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- JUGADORES (POSICIONES EN CÍRCULO) -->
+            <div class="players-area" id="players-area">
+                <!-- Se llenará dinámicamente -->
+            </div>
+
+            <!-- TU MANO DE CARTAS -->
+            <div class="player-hand" id="player-hand">
+                <!-- Tus cartas aparecerán aquí -->
+            </div>
+
+            <!-- ACCIONES DEL JUGADOR -->
+            <div class="player-actions" id="player-actions">
+                <button id="draw-card-btn" class="game-btn draw-btn">Robar Carta</button>
+                <button id="uno-btn" class="game-btn uno-btn">¡UNO!</button>
+                <button id="pass-btn" class="game-btn pass-btn">Pasar Turno</button>
+            </div>
+        </main>
+
+        <!-- ESTADO DEL JUEGO -->
+        <div class="game-status" id="game-status">
+            <div class="status-message">Esperando jugada...</div>
+            <div class="game-direction" id="game-direction">➡️ Sentido: Horario</div>
         </div>
-        
-        <a href="{{ url_for('main.index') }}" class="btn btn-secondary">Salir de la Sala</a>
-        
-        <div id="connection-status" class="status">
-            Conectando...
+
+        <!-- PANEL DE INFORMACIÓN -->
+        <aside class="game-sidebar">
+            <div class="player-cards-count" id="player-cards-count">
+                <!-- Contador de cartas por jugador -->
+            </div>
+            
+            <div class="game-log" id="game-log">
+                <h3>Últimas jugadas:</h3>
+                <ul id="log-list">
+                    <!-- Log de jugadas -->
+                </ul>
+            </div>
+        </aside>
+
+        <!-- SALIR DEL JUEGO -->
+        <div class="game-footer">
+            <button id="leave-game-btn" class="btn btn-danger">Abandonar Partida</button>
         </div>
     </div>
 
     <script src="{{ url_for('static', filename='js/game.js') }}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🎮 SALA DE JUEGO CARGADA');
+            console.log('Sala:', '{{ room_code }}');
+            console.log('Usuario:', '{{ username }}');
+            
+            // Inicializar el juego
+            window.unoGame = new UNOGame('{{ room_code }}', '{{ username }}');
+        });
+    </script>
 </body>
 </html>
