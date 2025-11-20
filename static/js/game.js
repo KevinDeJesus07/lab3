@@ -35,7 +35,7 @@ class UNOClient {
     connectToServer() {
         const serverUrl = window.location.hostname === 'localhost' 
         ? 'http://localhost:5000' 
-        : 'https://tu-app.onrender.com';
+        : 'https://lab3-8l6a.onrender.com';
 
         this.socket = io(serverUrl, {
             reconnection: true,
