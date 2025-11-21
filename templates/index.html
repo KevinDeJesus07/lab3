@@ -1,29 +1,48 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UNO</title>
+    <title>UNO Online - Inicio</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
 </head>
 <body>
-    <div class="container">
-        <h1>UNO Online</h1>
-        
-        <div class="menu">
-            <a href="{{ url_for('main.create_room') }}" class="btn btn-primary">
-                Crear Sala
-            </a>
-            <a href="{{ url_for('main.join_room') }}" class="btn btn-secondary">
-                Unirse a Sala
-            </a>
-        </div>
-        
-        <div id="connection-status" class="status">
-            Conectando...
-        </div>
+    <div class="page-container">
+        <main class="main-menu">
+            <header class="main-menu__header">
+                <h1 class="main-menu__title">UNO Online</h1>
+                <p class="main-menu__subtitle">Juega UNO con tus amigos</p>
+            </header>
+            
+            <nav class="main-menu__actions">
+                <a href="{{ url_for('main.create_room') }}" 
+                   class="btn btn--primary btn--large">
+                    <span class="btn__icon">🏠</span>
+                    <span class="btn__text">Crear Sala</span>
+                </a>
+                
+                <a href="{{ url_for('main.join_room') }}" 
+                   class="btn btn--secondary btn--large">
+                    <span class="btn__icon">🚪</span>
+                    <span class="btn__text">Unirse a Sala</span>
+                </a>
+            </nav>
+            
+            <footer class="main-menu__footer">
+                <div id="connection-status" class="connection-status connection-status--connecting">
+                    <span class="connection-status__icon">⚡</span>
+                    <span class="connection-status__text">Conectando...</span>
+                </div>
+                <button id="mute-btn" class="btn btn--sound" onclick="toggleMute()">
+                    🔈 Sonido
+                </button>
+            </div>
+            </footer>
+        </main>
     </div>
-    <script src="{{ url_for('static', filename='js/game.js') }}"></script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <script src="{{ url_for('static', filename='js/sounds.js') }}"></script>
+    <script type="module" src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>
 </html>

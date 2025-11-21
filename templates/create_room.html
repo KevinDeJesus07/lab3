@@ -3,53 +3,101 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Crear Sala</title>
+    <title>UNO - Crear Sala</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
 </head>
 <body>
-    <div class="container">
-        <h1>Crear Sala</h1>
-        
-        <form id="create-room-form">
-            <div class="form-group">
-                <label for="room-name">Nombre de la sala:</label>
-                <input type="text" id="room-name" name="room-name" required 
-                       placeholder="Ej: LobosNocturnos">
-            </div>
+    <div class="page-container">
+        <main class="form-page">
+            <header class="form-page__header">
+                <h1 class="form-page__title">Crear Sala</h1>
+                <p class="form-page__subtitle">Configura tu partida de UNO</p>
+            </header>
             
-            <div class="form-group">
-                <label for="username">Tu nombre:</label>
-                <input type="text" id="username" name="username" required 
-                       placeholder="Ej: Samuel De Luque">
-            </div>
+            <form id="create-room-form" class="form" novalidate>
+                <div class="form__group">
+                    <label for="room-name" class="form__label">
+                        Nombre de la sala
+                    </label>
+                    <input 
+                        type="text" 
+                        id="room-name" 
+                        name="room-name" 
+                        class="form__input"
+                        placeholder="Ej: LobosNocturnos"
+                        required
+                        maxlength="50"
+                        autocomplete="off">
+                    <span class="form__helper">Elige un nombre único para tu sala</span>
+                </div>
+                
+                <div class="form__group">
+                    <label for="username" class="form__label">
+                        Tu nombre
+                    </label>
+                    <input 
+                        type="text" 
+                        id="username" 
+                        name="username" 
+                        class="form__input"
+                        placeholder="Ej: Samuel De Luque"
+                        required
+                        maxlength="20"
+                        autocomplete="off">
+                    <span class="form__helper">Cómo te verán los demás jugadores</span>
+                </div>
+                
+                <div class="form__actions">
+                    <button type="submit" class="btn btn--primary btn--large">
+                        Crear Sala
+                    </button>
+                </div>
+            </form>
             
-            <button type="submit" class="btn btn-primary">Crear Sala</button>
-        </form>
-        
-        <a href="{{ url_for('main.index') }}" class="btn btn-secondary">Volver a Inicio</a>
-        
-        <div id="connection-status" class="status">
-            Conectando...
-        </div>
+            <nav class="form-page__nav">
+                <a href="{{ url_for('main.index') }}" class="btn btn--secondary">
+                    ← Volver al Inicio
+                </a>
+            </nav>
+            
+            <footer class="form-page__footer">
+                <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                <div id="connection-status" class="connection-status connection-status--connecting">
+                    <span class="connection-status__icon">⚡</span>
+                    <span class="connection-status__text">Conectando...</span>
+                </div>
+                <button id="mute-btn" class="btn btn--sound" onclick="toggleMute()">
+                    🔈 Sonido
+                </button>
+                </div>
+            </footer>
+        </main>
     </div>
-
-    <script src="{{ url_for('static', filename='js/game.js') }}"></script>
-    <script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <script type="module" src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script type="module">
         document.addEventListener('DOMContentLoaded', function() {
             const form = document.getElementById('create-room-form');
+            const roomNameInput = document.getElementById('room-name');
+            const usernameInput = document.getElementById('username');
             
             form.addEventListener('submit', function(e) {
                 e.preventDefault();
                 
-                const roomName = document.getElementById('room-name').value;
-                const username = document.getElementById('username').value;
+                const roomName = roomNameInput.value.trim();
+                const username = usernameInput.value.trim();
                 
-                if (roomName && username) {
-                    window.unoClient.createRoom(roomName, username);
+                if (!roomName || !username) {
+                    alert('Por favor completa todos los campos');
+                    return;
                 }
+                
+                // Usar la API global
+                window.unoApp.createRoom(roomName, username);
             });
         });
     </script>
+    <script src="{{ url_for('static', filename='js/sounds.js') }}"></script>
 </body>
 </html>

@@ -2,50 +2,58 @@ import random
 from .card import Card
 
 class Deck:
-
     def __init__(self):
         self.cards = []
         self.discard_pile = []
-        self.build_standard_uno_deck()
+        self._build()
         self.shuffle()
-    
-    def build_standard_uno_deck(self):
-        colors = ["red", "blue", "green", "yellow"]
-        numbers = [str(i) for i in range(10)]
-        action_cards = ["skip", "reverse", "draw_two"]
+
+    def _build(self):
+        colors = ['red', 'blue', 'green', 'yellow']
         
         for color in colors:
-            self.cards.append(Card(color, "0"))
+            # 0 solo hay una vez por color
+            self.cards.append(Card(color, '0'))
             
-            for number in numbers[1:]:
-                self.cards.append(Card(color, number))
-                self.cards.append(Card(color, number))
+            # 1-9 hay dos veces por color
+            for i in range(1, 10):
+                self.cards.append(Card(color, str(i)))
+                self.cards.append(Card(color, str(i)))
             
-            for action in action_cards:
+            # Acciones (2 de cada una por color)
+            actions = ['skip', 'reverse', 'draw2']
+            for action in actions:
                 self.cards.append(Card(color, action, special=True))
                 self.cards.append(Card(color, action, special=True))
         
+        # Comodines (4 de cada uno)
         for _ in range(4):
-            self.cards.append(Card("black", "wild", special=True))
-            self.cards.append(Card("black", "wild_draw_four", special=True))
-    
+            self.cards.append(Card('black', 'wild', special=True))
+            self.cards.append(Card('black', 'draw4', special=True))
+
     def shuffle(self):
         random.shuffle(self.cards)
-    
+
     def draw_card(self):
         if not self.cards:
-            self.reshuffle_discard()
-        return self.cards.pop() if self.cards else None
-    
-    def reshuffle_discard(self):
-        if self.discard_pile:
-            last_card = self.discard_pile.pop()
-            self.cards = self.discard_pile
-            self.discard_pile = [last_card]
+            if not self.discard_pile:
+                return None
+            
+            # Reciclar descarte si se acaba el mazo
+            # Dejamos la última carta (índice -1) en la mesa/descarte para que siga siendo visible
+            self.cards = self.discard_pile[:-1] 
+            self.discard_pile = [self.discard_pile[-1]]
             self.shuffle()
-    
+            
+            if not self.cards: return None # Doble chequeo por si no hay nada
+            
+        return self.cards.pop()
+
     def add_to_discard(self, card):
-        self.discard_pile.append(card)
-    
-    def __len__(self):
-        return len(self.cards)
+        # Aseguramos que solo guardamos la representación de diccionario en el descarte
+        if isinstance(card, Card):
+            card_dict = card.to_dict()
+        else: # Si ya es un dict
+            card_dict = card
+            
+        self.discard_pile.append(card_dict)

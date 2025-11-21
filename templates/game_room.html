@@ -3,87 +3,170 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UNO - Juego en curso</title>
+    <title>UNO - Partida {{ room_code }}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/game.css') }}">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
 </head>
 <body>
-    <div class="game-container">
-        <!-- CABECERA DEL JUEGO -->
-        <header class="game-header">
-            <h1>UNO - Partida en curso</h1>
-            <div class="game-info">
-                <span class="current-player" id="current-player">Turno de: [TODO]</span>
-                <span class="game-code">Sala: {{ room_code }}</span>
+    <div class="game">
+        <!-- Cabecera del juego -->
+        <header class="game__header">
+            <div class="game__header-content">
+                <h1 class="game__title">UNO</h1>
+                <div class="game__info">
+                    <span id="current-player" class="game__turn-indicator">
+                        Turno de: Cargando...
+                    </span>
+                    <span class="game__room-code">
+                        Sala: {{ room_code }}
+                    </span>
+                    <button id="mute-btn" class="btn btn--sound" onclick="toggleMute()">
+                        🔈 Sonido
+                    </button>
+                </div>
             </div>
         </header>
 
-        <!-- ÁREA PRINCIPAL DEL JUEGO -->
-        <main class="game-main">
-            <!-- CARTA EN EL CENTRO -->
-            <div class="center-card">
-                <div class="current-card" id="current-card">
-                    <div class="card-content">
-                        <span class="card-number">5</span>
-                        <span class="card-color red">●</span>
+        <!-- Área principal del juego -->
+        <main class="game__main">
+            <!-- Zona de jugadores -->
+            <section class="game__players" id="players-area">
+                <!-- Se llenará dinámicamente -->
+            </section>
+
+            <!-- Carta central (pila de descarte) -->
+            <section class="game__center">
+                <div class="game__discard-pile">
+                    <div id="current-card" class="card card--center">
+                        <!-- Se llenará dinámicamente con imagen -->
+                        <img src="{{ url_for('static', filename='images/cards/back.png') }}" 
+                             alt="Carta de reverso" 
+                             class="card__image">
                     </div>
                 </div>
-            </div>
+                
+                <!-- Mazo de robo -->
+                <div class="game__draw-pile">
+                    <div class="card card--back">
+                        <img src="{{ url_for('static', filename='images/cards/back.png') }}" 
+                             alt="Mazo" 
+                             class="card__image">
+                    </div>
+                </div>
+            </section>
 
-            <!-- JUGADORES (POSICIONES EN CÍRCULO) -->
-            <div class="players-area" id="players-area">
-                <!-- Se llenará dinámicamente -->
-            </div>
+            <!-- Mano del jugador -->
+            <section class="game__hand">
+                <div id="player-hand" class="player-hand">
+                    <!-- Se llenará dinámicamente con cartas -->
+                </div>
+            </section>
 
-            <!-- TU MANO DE CARTAS -->
-            <div class="player-hand" id="player-hand">
-                <!-- Tus cartas aparecerán aquí -->
-            </div>
-
-            <!-- ACCIONES DEL JUGADOR -->
-            <div class="player-actions" id="player-actions">
-                <button id="draw-card-btn" class="game-btn draw-btn">Robar Carta</button>
-                <button id="uno-btn" class="game-btn uno-btn">¡UNO!</button>
-                <button id="pass-btn" class="game-btn pass-btn">Pasar Turno</button>
-            </div>
+            <!-- Acciones del jugador -->
+            <section class="game__actions">
+                <button id="draw-card-btn" class="btn btn--game btn--draw" disabled>
+                    🃏 Robar Carta
+                </button>
+                <button id="uno-btn" class="btn btn--game btn--uno" disabled>
+                    🚨 ¡UNO!
+                </button>
+                <button id="pass-btn" class="btn btn--game btn--pass" disabled>
+                    ⏭️ Pasar Turno
+                </button>
+            </section>
         </main>
 
-        <!-- ESTADO DEL JUEGO -->
-        <div class="game-status" id="game-status">
-            <div class="status-message">Esperando jugada...</div>
-            <div class="game-direction" id="game-direction">➡️ Sentido: Horario</div>
-        </div>
+        <!-- Sidebar con información -->
+        <aside class="game__sidebar">
+            <!-- Estado del juego -->
+            <section class="game__status">
+                <h3 class="game__sidebar-title">Estado</h3>
+                <div id="game-status" class="game-status">
+                    <p class="game-status__message">Esperando jugada...</p>
+                    <p id="game-direction" class="game-status__direction">
+                        ➡️ Sentido: Horario
+                    </p>
+                </div>
+            </section>
 
-        <!-- PANEL DE INFORMACIÓN -->
-        <aside class="game-sidebar">
-            <div class="player-cards-count" id="player-cards-count">
-                <!-- Contador de cartas por jugador -->
-            </div>
-            
-            <div class="game-log" id="game-log">
-                <h3>Últimas jugadas:</h3>
-                <ul id="log-list">
-                    <!-- Log de jugadas -->
+            <!-- Conteo de cartas -->
+            <section class="game__player-info">
+                <h3 class="game__sidebar-title">Jugadores</h3>
+                <div id="player-cards-count" class="player-cards-list">
+                    <!-- Se llenará dinámicamente -->
+                </div>
+            </section>
+
+            <!-- Log de jugadas -->
+            <section class="game__log">
+                <h3 class="game__sidebar-title">Últimas jugadas</h3>
+                <ul id="log-list" class="game-log-list">
+                    <!-- Se llenará dinámicamente -->
                 </ul>
-            </div>
+            </section>
         </aside>
 
-        <!-- SALIR DEL JUEGO -->
-        <div class="game-footer">
-            <button id="leave-game-btn" class="btn btn-danger">Abandonar Partida</button>
+        <!-- Footer con botón de salir -->
+        <footer class="game__footer">
+            <button id="leave-game-btn" class="btn btn--danger">
+                🚪 Abandonar Partida
+            </button>
+        </footer>
+
+        <!-- Modal de Fin de Juego -->
+        <div id="game-ended-modal" class="modal hidden">
+            <div class="modal__content">
+                <div class="modal__header">
+                    <h2 class="modal__title">🏆 ¡Juego Terminado!</h2>
+                </div>
+                <div class="modal__body">
+                    <p id="winner-message" class="modal__message"></p>
+                    <div class="modal__winner-emoji">🎉</div>
+                </div>
+                <div class="modal__footer">
+                    <button id="back-to-lobby-btn" class="btn btn--primary btn--large">
+                        ← Volver a la Sala
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Panel de selección de color (se muestra solo para Wild) -->
+        <<div id="color-picker" class="color-picker hidden">
+        <div class="color-picker__panel">
+            <p class="color-picker__title">Elige un color para el comodín</p>
+            <div class="color-picker__options">
+                <button class="color-picker__btn color-picker__btn--red" data-color="red">
+                    🔴 Rojo
+                </button>
+                <button class="color-picker__btn color-picker__btn--blue" data-color="blue">
+                    🔵 Azul
+                </button>
+                <button class="color-picker__btn color-picker__btn--green" data-color="green">
+                    🟢 Verde
+                </button>
+                <button class="color-picker__btn color-picker__btn--yellow" data-color="yellow">
+                    🟡 Amarillo
+                </button>
+            </div>
+            <p style="color: #a0aec0; font-size: 0.9rem; margin-top: 1rem;">
+                El color seleccionado determinará el siguiente color de juego
+            </p>
         </div>
     </div>
+    </div>
 
-    <script src="{{ url_for('static', filename='js/game.js') }}"></script>
-    <script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <script type="module" src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script type="module">
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('🎮 SALA DE JUEGO CARGADA');
-            console.log('Sala:', '{{ room_code }}');
-            console.log('Usuario:', '{{ username }}');
+            console.log('🎮 Sala de juego cargada');
+            console.log('   Sala:', '{{ room_code }}');
+            console.log('   Usuario:', '{{ username }}');
             
-            // Inicializar el juego
-            window.unoGame = new UNOGame('{{ room_code }}', '{{ username }}');
+            // La inicialización se maneja automáticamente en main.js
+            // No necesitas instanciar manualmente UNOGame
         });
     </script>
+    <script src="{{ url_for('static', filename='js/sounds.js') }}"></script>
 </body>
 </html>
