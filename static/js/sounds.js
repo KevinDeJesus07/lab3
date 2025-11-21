@@ -22,7 +22,7 @@ class SoundManager {
         // Configurar música de fondo
         this.backgroundMusic = this.sounds.music;
         this.backgroundMusic.loop = true;
-        this.backgroundMusic.volume = 0.3;
+        this.backgroundMusic.volume = 0.15;
 
         this.applyMuteState();
         this.setupGlobalListeners();
@@ -37,7 +37,7 @@ class SoundManager {
             audio.preload = 'auto';
             
             if (!isMusic) {
-                audio.volume = 0.7;
+                audio.volume = 0.5;
             }
             
             audio.addEventListener('canplaythrough', () => {
